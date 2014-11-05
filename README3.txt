@@ -1,1 +1,1 @@
-this is the readme file in islandora7 repo
+edit this file November 5, 2014
