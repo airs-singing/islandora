@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * Implements hook_islandora_object_ingested
+ */
+function airs_citation_ir_citationCModel_islandora_object_ingested($object) {
+  if (!isset($object['PDF'])) {
+    airs_citation_add_default_tn($object);
+  }
+}
+
+/**
+ * Adds a default thumbnail to citation objects that don't have a TN on ingest.
+ *
+ * @param object $object
+ *   The islandora object that we will add a thumbnail.
+ */
+function airs_citation_add_default_tn($object) {
+  $tn_path = drupal_get_path('module', 'airs_citation') . '/images/airs_citation_tn.jpg';
+  $tn_datastream = $object->constructDatastream('TN');
+  $tn_datastream->label = 'TN';
+  $tn_datastream->mimeType = 'image/jpeg';
+  $tn_datastream->setContentFromFile($tn_path);
+  $object->ingestDatastream($tn_datastream);
+}
+
