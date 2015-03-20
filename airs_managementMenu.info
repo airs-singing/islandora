@@ -1,6 +1,0 @@
-name = AIRS Management Menu
-description = a menu for managing management tasks at Islandora pages
-package = Islandora
-version = "7.x-1.0"
-core = "7.x"
-dependencies[] = islandora
