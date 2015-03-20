@@ -1,0 +1,27 @@
+
+<Policy xmlns="urn:oasis:names:tc:xacml:1.0:policy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PolicyId="islandora-xacml-editor-v1" RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+  <Target>
+    <Subjects>
+      <AnySubject></AnySubject>
+    </Subjects>
+    <Resources>
+      <AnyResource></AnyResource>
+    </Resources>
+    <Actions>
+      <AnyAction></AnyAction>
+    </Actions>
+  </Target>
+  <Rule Effect="Permit" RuleId="allow-everything-else">
+    <Target>
+      <Subjects>
+        <AnySubject></AnySubject>
+      </Subjects>
+      <Resources>
+        <AnyResource></AnyResource>
+      </Resources>
+      <Actions>
+        <AnyAction></AnyAction>
+      </Actions>
+    </Target>
+  </Rule>
+</Policy>
