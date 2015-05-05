@@ -41,8 +41,9 @@ function airs_xacml_islandora_datastream_modified($object, $datastream) {
 function airs_xacml_apply_policy($mods, $object) {
   // DECLARATIONS
   global $user;
+  $sub_theme = 'Subtheme';
 
-  $userAccess = userAccess_declaration($mods, $object); 
+  $userAccess = userAccess_declaration($mods, $object);
   $contributors = contributors_declaration($mods, $object);
   $themes = themes_declaration($mods, $object);
 
@@ -65,6 +66,7 @@ function airs_xacml_apply_policy($mods, $object) {
     switch($userAccess) {
       case 'Public':
         $xacml->viewingRule->addRole(array('anonymous user', 'authenticated user'));
+        $xacml->viewingRule->addUser(array('anonymous'));
         if (airs_xacml_is_collection($object)) {
           $xacml->managementRule->addRole(array('Member'));
         }
@@ -80,10 +82,11 @@ function airs_xacml_apply_policy($mods, $object) {
       case 'My sub-theme':
         // returns all themes listed in the AIRS Themes field
         foreach ($themes as $theme) {
-          // checks if the listing is a string, then if begins with Subtheme
+          // checks if the listing is a string, then if contains Subtheme
           if (is_string($theme) && strlen($theme) > 5) {
-            if (substr($theme, 0, 8) == 'Subtheme') { 
-              $subthemeID = 'st'.substr($theme, 9, 3); 
+            $str_index = strpos($theme, $sub_theme);
+            if (!empty($str_index)) {
+              $subthemeID = 'st'.substr($theme, ++$str_index + strlen($sub_theme), 3);
               $xacml->viewingRule->addRole(array($subthemeID));
               $xacml->managementRule->addRole(array($subthemeID));
             }
@@ -147,7 +150,7 @@ function airs_xacml_is_collection($object) {
 }
 
 // implements hook_islandora_form_alter
-function airs_xacml_form_alter(&$form, &$form_state, &$form_id) {
-  dpm($form_id); // displays name of forms on the page
-  dpm($form); // displays form information  
-}
+/*function airs_xacml_form_alter(&$form, &$form_state, &$form_id) {
+  //dpm($form_id); // displays name of forms on the page
+  //dpm($form); // displays form information
+} */
