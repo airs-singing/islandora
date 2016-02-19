@@ -1,4 +1,37 @@
 <?php
+
+/**
+ * Implements hook_menu().
+ */
+function airs_xacml_menu() {
+  $items = array();
+
+  $items['airs-xacml/realname/autocomplete'] = array(
+    'title' => 'Airs Real user Auto Complete',
+    'description' => 'Autocomplete for airs.',
+    'page callback' => 'airs_xacml_autocomplete',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+    'page arguments' => array(3),
+  );
+
+  return $items;
+}
+
+function airs_xacml_autocomplete($string) {
+  $matches = array();
+  //debug($string, TRUE);
+  $query = db_select('realname', 'rn');
+  $query->fields('rn', array('realname'));
+  $query->condition('rn.realname', db_like($string) . '%', 'LIKE');
+  $real_names = $query->execute()->fetchCol();
+  foreach ($real_names as $real_name) {
+    $matches[$real_name] = $real_name;
+  }
+  drupal_json_output($matches);
+}
+
+
 /**
  * Implements hook_islandora_object_ingested
  */
@@ -118,13 +151,37 @@ function contributors_declaration($mods, $object) {
     switch((string) $name['type']) {
     case 'personal':
       foreach($name->namePart as $namePart) {
-        $contributors[$n] = (string)$namePart;
+        // lookup the username based on the realname that is stored in the mods.
+        $username = airs_xacml_get_username((string)$namePart);
+        if(empty($username)){
+          $username = (string)$namePart;
+        }
+        $contributors[$n] = $username;
         $n++;
       }
       break;
     }
   }
   return $contributors;
+}
+
+/**
+ * Gets the username from the drupal database based on the realname.
+ * @param string $realname
+ *   a realname may look like Annabel J. Cohen
+ * @return mixed
+ *   a drupal user name (may look like acohen) or NULL if no match
+ */
+function airs_xacml_get_username($realname){
+  // Assuming realnames must be unique for each drupal
+  $query = db_select('realname', 'rn');
+  $query->fields('rn', array('uid'));
+  $query->condition('rn.realname', $realname);
+  $rids = $query->execute()->fetchCol();
+  if(!empty($rids)) {
+    $real_user = user_load($rids[0]);
+    return $real_user->name;
+  }
 }
 
 // designed to declare $themes
