@@ -117,9 +117,8 @@ function airs_xacml_apply_policy($mods, $object) {
         foreach ($themes as $theme) {
           // checks if the listing is a string, then if contains Subtheme
           if (is_string($theme) && strlen($theme) > 5) {
-            $str_index = strpos($theme, $sub_theme);
-            if (!empty($str_index)) {
-              $subthemeID = 'st'.substr($theme, ++$str_index + strlen($sub_theme), 3);
+            if (substr($theme, 0, 8) == 'Subtheme') {
+              $subthemeID = 'st'.substr($theme, 9, 3);
               $xacml->viewingRule->addRole(array($subthemeID));
               $xacml->managementRule->addRole(array($subthemeID));
             }
