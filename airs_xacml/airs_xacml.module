@@ -36,7 +36,7 @@ function airs_xacml_autocomplete($string) {
  * Implements hook_islandora_object_ingested
  */
 function airs_xacml_islandora_object_ingested($object) {
-  if ($object->models[0] != 'ir:citationCModel') {
+  if ($object->models[0] != 'ir:citationCModel' && !empty($object['MODS'])) {
     $xmlPath = drupal_get_path('module', 'airs_xacml');
     $mods = new SimpleXMLElement($object['MODS']->getContent(''));
     $dsid = 'POLICY';
